@@ -20,8 +20,11 @@ return {
           ['\\'] = 'close_window',
         },
       },
+      filtered_items = {
+        hide_gitignored = false,
+      },
     },
-    close_if_last_window = false,
+    close_if_last_window = true,
     window = {
       position = 'right',
     },
