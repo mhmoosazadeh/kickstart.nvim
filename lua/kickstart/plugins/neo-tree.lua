@@ -22,6 +22,7 @@ return {
       },
       filtered_items = {
         hide_gitignored = false,
+        hide_dotfiles = false,
       },
     },
     close_if_last_window = true,
