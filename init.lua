@@ -875,8 +875,8 @@ require('lazy').setup({
         -- transparent = true,
       }
 
-      vim.cmd.colorscheme 'tokyonight'
-      vim.cmd.hi 'Comment gui=none'
+      -- vim.cmd.colorscheme 'tokyonight'
+      -- vim.cmd.hi 'Comment gui=none'
     end,
   },
   -- {
