@@ -653,6 +653,12 @@ require('lazy').setup({
 
         -- CSS LSP
         cssls = {},
+
+        -- Docker LSP
+        dockerls = {},
+
+        -- Docker-Compose LSP
+        docker_compose_language_service = {},
       }
 
       -- Ensure the servers and tools above are installed
