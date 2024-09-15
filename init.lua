@@ -659,6 +659,9 @@ require('lazy').setup({
 
         -- Docker-Compose LSP
         docker_compose_language_service = {},
+
+        -- HTML LSP
+        html = {},
       }
 
       -- Ensure the servers and tools above are installed
