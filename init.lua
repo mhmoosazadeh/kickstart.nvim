@@ -712,6 +712,20 @@ require('lazy').setup({
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
+        -- Disable with a global or buffer-local variable
+        if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+          return
+        end
+        -- Disable autoformat on certain filetypes
+        local ignore_filetypes = { 'sql', 'java', 'ruby' }
+        if vim.tbl_contains(ignore_filetypes, vim.bo[bufnr].filetype) then
+          return
+        end
+        -- Disable autoformat for files in a certain path
+        local bufname = vim.api.nvim_buf_get_name(bufnr)
+        if bufname:match '/node_modules/' then
+          return
+        end
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
@@ -954,9 +968,12 @@ require('lazy').setup({
         -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
         --  If you are experiencing weird indenting issues, add the language to
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
+        -- additional_vim_regex_highlighting = { 'ruby' },
       },
-      indent = { enable = true, disable = { 'ruby' } },
+      indent = {
+        enable = true,
+        -- disable = { 'ruby' },
+      },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
@@ -1009,6 +1026,68 @@ require('lazy').setup({
     },
   },
 })
+
+vim.api.nvim_create_user_command('FormatDisable', function(args)
+  if args.bang then
+    -- FormatDisable! will disable formatting just for this buffer
+    vim.b.disable_autoformat = true
+  else
+    vim.g.disable_autoformat = true
+  end
+end, {
+  desc = 'Disable autoformat-on-save',
+  bang = true,
+})
+
+vim.api.nvim_create_user_command('FormatEnable', function()
+  vim.b.disable_autoformat = false
+  vim.g.disable_autoformat = false
+end, {
+  desc = 'Re-enable autoformat-on-save',
+})
+
+local diff_format = function()
+  local ignore_filetypes = { 'lua' }
+  if vim.tbl_contains(ignore_filetypes, vim.bo.filetype) then
+    vim.notify('range formatting for ' .. vim.bo.filetype .. ' not working properly.')
+    return
+  end
+
+  local hunks = require('gitsigns').get_hunks()
+  if hunks == nil then
+    return
+  end
+
+  local format = require('conform').format
+
+  local function format_range()
+    if next(hunks) == nil then
+      vim.notify('done formatting git hunks', 'info', { title = 'formatting' })
+      return
+    end
+    local hunk = nil
+    while next(hunks) ~= nil and (hunk == nil or hunk.type == 'delete') do
+      hunk = table.remove(hunks)
+    end
+
+    if hunk ~= nil and hunk.type ~= 'delete' then
+      local start = hunk.added.start
+      local last = start + hunk.added.count
+      -- nvim_buf_get_lines uses zero-based indexing -> subtract from last
+      local last_hunk_line = vim.api.nvim_buf_get_lines(0, last - 2, last - 1, true)[1]
+      local range = { start = { start, 0 }, ['end'] = { last - 1, last_hunk_line:len() } }
+      format({ range = range, async = true, lsp_fallback = true }, function()
+        vim.defer_fn(function()
+          format_range()
+        end, 1)
+      end)
+    end
+  end
+
+  format_range()
+end
+
+vim.api.nvim_create_user_command('DiffFormat', diff_format, { desc = 'Format changed lines' })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
