@@ -780,7 +780,7 @@ require('lazy').setup({
           return
         end
         -- Disable autoformat on certain filetypes
-        local ignore_filetypes = { 'sql', 'java', 'ruby' }
+        local ignore_filetypes = { 'sql', 'java', 'ruby', 'javascript' }
         if vim.tbl_contains(ignore_filetypes, vim.bo[bufnr].filetype) then
           return
         end
@@ -906,7 +906,7 @@ require('lazy').setup({
       -- the rust implementation via `'prefer_rust_with_warning'`
       --
       -- See :h blink-cmp-config-fuzzy for more information
-      fuzzy = { implementation = 'lua' },
+      fuzzy = { implementation = 'prefer_rust_with_warning' },
 
       -- Shows a signature help window while you type arguments for a function
       signature = { enabled = true },
