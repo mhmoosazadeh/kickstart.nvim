@@ -788,7 +788,7 @@ require('lazy').setup({
           return
         end
         -- Disable autoformat on certain filetypes
-        local ignore_filetypes = { 'sql', 'java', 'ruby', 'javascript' }
+        local ignore_filetypes = { 'sql', 'java', 'ruby', 'javascript', 'javascriptreact' }
         if vim.tbl_contains(ignore_filetypes, vim.bo[bufnr].filetype) then
           return
         end
