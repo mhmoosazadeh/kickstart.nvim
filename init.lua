@@ -851,9 +851,24 @@ require('lazy').setup({
             end,
           },
         },
-        opts = {},
+        opts = {
+          sources = {
+            -- Add 'avante' to the list
+            default = { 'avante', 'lsp', 'path', 'luasnip', 'buffer' },
+            providers = {
+              avante = {
+                module = 'blink-cmp-avante',
+                name = 'Avante',
+                opts = {
+                  -- options for blink-cmp-avante
+                },
+              },
+            },
+          },
+        },
       },
       'folke/lazydev.nvim',
+      'Kaiser-Yang/blink-cmp-avante',
     },
     --- @module 'blink.cmp'
     --- @type blink.cmp.Config
