@@ -19,7 +19,7 @@ return {
         args = { '--experimental-acp' },
         env = {
           NODE_NO_WARNINGS = '1',
-          GEMINI_API_KEY = vim.fn.system('op read op://Private/Gemini_CLI_API_Key/API_KEY'):gsub('%s+$', ''),
+          GEMINI_API_KEY = vim.fn.system('op read op://Private/API_KEYS/GEMINI_API_KEY'):gsub('%s+$', ''),
         },
       },
     },
