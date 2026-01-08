@@ -1,3 +1,14 @@
+vim.opt.laststatus = 3
+
+local function env_or_op(var_name, op_path)
+  local value = vim.env[var_name]
+  if value and value ~= '' then
+    return value
+  end
+
+  return vim.fn.system('op read ' .. op_path):gsub('%s+$', '')
+end
+
 return {
   'yetone/avante.nvim',
   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
@@ -19,30 +30,41 @@ return {
         args = { '--experimental-acp' },
         env = {
           NODE_NO_WARNINGS = '1',
-          GEMINI_API_KEY = vim.fn.system('op read op://Private/API_KEYS/GEMINI_API_KEY'):gsub('%s+$', ''),
+          GEMINI_API_KEY = env_or_op('GEMINI_API_KEY', 'op://Private/API_KEYS/GEMINI_API_KEY'),
         },
       },
     },
-    -- providers = {
-    --   claude = {
-    --     endpoint = "https://api.anthropic.com",
-    --     model = "claude-sonnet-4-20250514",
-    --     timeout = 30000, -- Timeout in milliseconds
-    --       extra_request_body = {
-    --         temperature = 0.75,
-    --         max_tokens = 20480,
-    --       },
-    --   },
-    --   moonshot = {
-    --     endpoint = "https://api.moonshot.ai/v1",
-    --     model = "kimi-k2-0711-preview",
-    --     timeout = 30000, -- Timeout in milliseconds
-    --     extra_request_body = {
-    --       temperature = 0.75,
-    --       max_tokens = 32768,
-    --     },
-    --   },
-    -- },
+    providers = {
+      ollama_deepseek_coder_v2 = {
+        __inherited_from = 'ollama',
+        model = 'deepseek-coder-v2:16b',
+      },
+      ollama_codellama = {
+        __inherited_from = 'ollama',
+        model = 'codellama:7b',
+      },
+      ollama_codegemma = {
+        __inherited_from = 'ollama',
+        model = 'codegemma:7b',
+      },
+      ollama_q_coder = {
+        __inherited_from = 'ollama',
+        model = 'qwen2.5-coder:7b',
+      },
+      gemini = {
+        api_key = env_or_op('GEMINI_API_KEY', 'op://Private/API_KEYS/GEMINI_API_KEY'),
+        timeout = 30000, -- Timeout in milliseconds
+      },
+    },
+    web_search_engine = {
+      provider = 'google',
+      providers = {
+        google = {
+          api_key_name = env_or_op('GEMINI_API_KEY', 'op://Private/API_KEYS/GOOGLE_SEARCH_API_KEY'),
+          engine_id_name = 'c4bbf66208cfb4fb6',
+        },
+      },
+    },
   },
   dependencies = {
     'nvim-lua/plenary.nvim',
