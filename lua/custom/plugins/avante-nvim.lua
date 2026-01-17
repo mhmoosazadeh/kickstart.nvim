@@ -1,12 +1,17 @@
 vim.opt.laststatus = 3
 
+local op_cache = {}
+
 local function env_or_op(var_name, op_path)
-  local value = vim.env[var_name]
+  local value = op_cache[var_name] or vim.env[var_name]
   if value and value ~= '' then
     return value
   end
 
-  return vim.fn.system('op read ' .. op_path):gsub('%s+$', '')
+  value = vim.fn.system('op read ' .. op_path):gsub('%s+$', '')
+  op_cache[var_name] = value
+  vim.env[var_name] = value
+  return value
 end
 
 return {
