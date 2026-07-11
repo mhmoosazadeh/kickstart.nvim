@@ -1,10 +1,4 @@
-return {
-  'Mofiqul/dracula.nvim',
-  lazy = false,
-  priority = 1000,
-  config = function()
-    local dracula = require 'dracula'
-    dracula.setup {}
-    vim.cmd 'colorscheme dracula'
-  end,
-}
+vim.pack.add { 'https://github.com/Mofiqul/dracula.nvim' }
+
+require('dracula').setup {}
+vim.cmd.colorscheme 'dracula'
